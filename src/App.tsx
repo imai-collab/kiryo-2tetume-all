@@ -1579,6 +1579,16 @@ SFEN形式の例: 7nl/1R3sk2/5pppp/9/9/9/9/9/9 b GS 1
       }
     }
 
+    if (turnColor === Color.Black && !shogi.isCheck(Color.White)) {
+      setIsGameOver(true);
+      setMessage('王手ではありません。失敗となります。');
+      if (currentProblem) setMistakeCounts(prev => ({ ...prev, [currentProblem.id]: (prev[currentProblem.id] || 0) + 1 }));
+      setTimeout(() => {
+        resetGame();
+      }, 2500);
+      return;
+    }
+
     const newSfen = shogi.toSFENString(1);
     
     const count = sfenHistory.filter(s => s === newSfen).length;
@@ -1957,7 +1967,12 @@ SFEN形式の例: 7nl/1R3sk2/5pppp/9/9/9/9/9/9 b GS 1
 
             <div className="flex flex-row w-full max-w-full px-2 sm:px-0 sm:max-w-[480px] gap-2 mt-1 sm:mt-0">
               <button
-                onClick={resetGame}
+                onClick={() => {
+                  if (!isGameOver && moveHistory.length > 0) {
+                    if (currentProblem) setMistakeCounts(prev => ({ ...prev, [currentProblem.id]: (prev[currentProblem.id] || 0) + 1 }));
+                  }
+                  resetGame();
+                }}
                 className="flex-1 flex items-center justify-center gap-1 sm:gap-2 bg-amber-800 text-white py-1.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-base hover:bg-amber-900 transition-colors shadow-sm active:scale-95"
               >
                 <RotateCcw size={14} className="sm:w-[18px] sm:h-[18px]" />
